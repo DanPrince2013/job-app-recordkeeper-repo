@@ -1,0 +1,17 @@
+header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  header h1 {
+    margin: 0;
+    font-size: 2em;
+  }
+  
+  header small {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8em;
+    color: gray;
+  }
+  

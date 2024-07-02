@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from './components/Header';
+import JobForm from './components/JobForm';
+import JobList from './components/JobList';
+import JobDetail from './components/JobDetail';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
-function App() {
+const App = () => {
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [jobs, setJobs] = useState([]);
+
+  const fetchJobs = async () => {
+    const querySnapshot = await getDocs(collection(db, 'jobs'));
+    setJobs(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <JobForm selectedJob={selectedJob} setSelectedJob={setSelectedJob} refreshJobs={fetchJobs} />
+              <JobList jobs={jobs} setSelectedJob={setSelectedJob} refreshJobs={fetchJobs} />
+            </>
+          }
+        />
+        <Route path="/job/:id" element={<JobDetail job={selectedJob} />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
